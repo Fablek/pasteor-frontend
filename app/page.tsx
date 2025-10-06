@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,21 +12,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { createPaste } from "@/lib/api"
 
 export default function Home() {
+  const router = useRouter()
   const [content, setContent] = useState("")
   const [title, setTitle] = useState("")
   const [language, setLanguage] = useState("plaintext")
   const [expiresIn, setExpiresIn] = useState("never")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
-    console.log({ content, title, language, expiresIn })
+    try {
+      const paste = await createPaste({
+        content,
+        title: title || undefined,
+        language,
+        expiresIn,
+      })
 
-    setIsLoading(false)
+      router.push(`/paste/${paste.id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create paste")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -35,6 +51,12 @@ export default function Home() {
           <h1 className="text-4xl font-bold mb-2">Pasteor</h1>
           <p className="text-muted-foreground">Share code and text snippets easily</p>
         </div>
+
+        {error && (
+          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
