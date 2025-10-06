@@ -51,7 +51,8 @@ export default function Home() {
               placeholder="Paste your code or text here..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="mb-4"
+              className="min-h-[400px] font-mono"
+              required
             />
             <div className="text-sm text-muted-foreground mt-2">
               {content.length} characters
