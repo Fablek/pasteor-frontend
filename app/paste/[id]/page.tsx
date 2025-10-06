@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Copy, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
+import { CodeBlock } from "@/components/CodeBlock"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
 
@@ -79,11 +80,7 @@ export default async function PastePage({ params }: { params: { id: string } }) 
                     </div>
                 </div>
 
-                <div className="bg-muted rounded-lg p-6">
-                    <pre className="overflow-x-auto">
-                        <code className="font-mono text-sm">{paste.content}</code>
-                    </pre>
-                </div>
+                <CodeBlock code={paste.content} language={paste.language} />
 
                 <div className="mt-6 text-center">
                     <Button variant="link" asChild>
