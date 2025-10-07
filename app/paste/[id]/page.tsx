@@ -51,7 +51,7 @@ export default async function PastePage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <main className="min-h-screen bg-background p-8">
+        <div className="bg-background p-8">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
@@ -79,6 +79,6 @@ export default async function PastePage({ params }: { params: { id: string } }) 
                     </Button>
                 </div>
             </div>
-        </main>
+        </div>
     )
 }
