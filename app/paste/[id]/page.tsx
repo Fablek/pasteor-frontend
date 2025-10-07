@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Copy, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/CodeBlock"
 import { CopyButtons } from "@/components/CopyButtons"
