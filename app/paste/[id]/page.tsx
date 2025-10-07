@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Copy, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/CodeBlock"
+import { CopyButtons } from "@/components/CopyButtons"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
 
@@ -68,16 +69,7 @@ export default async function PastePage({ params }: { params: { id: string } }) 
                         </div>
                     </div>
 
-                    <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                        <Copy className="w-4 h-4 mr-2" />
-                            Copy
-                        </Button>
-                        <Button variant="outline" size="sm">
-                        <LinkIcon className="w-4 h-4 mr-2" />
-                            Copy Link
-                        </Button>
-                    </div>
+                    <CopyButtons content={paste.content} pasteId={paste.id} />
                 </div>
 
                 <CodeBlock code={paste.content} language={paste.language} />
