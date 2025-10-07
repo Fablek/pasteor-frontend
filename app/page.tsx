@@ -22,7 +22,6 @@ export default function Home() {
   const [language, setLanguage] = useState("plaintext")
   const [expiresIn, setExpiresIn] = useState("never")
   const [isLoading, setIsLoading] = useState(false)
-  //const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
