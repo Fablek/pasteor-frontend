@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -21,12 +22,22 @@ export default function Home() {
   const [language, setLanguage] = useState("plaintext")
   const [expiresIn, setExpiresIn] = useState("never")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  //const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!content.trim()) {
+      toast.error("Content cannot be empty")
+      return
+    }
+
+    if (content.length > 524288) {
+      toast.error("Content is too large (max 512KB)")
+      return
+    }
+
     setIsLoading(true)
-    setError("")
 
     try {
       const paste = await createPaste({
@@ -36,9 +47,10 @@ export default function Home() {
         expiresIn,
       })
 
+      toast.success("Paste created successfully!")
       router.push(`/paste/${paste.id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create paste")
+      toast.error(err instanceof Error ? err.message : "Failed to create paste")
     } finally {
       setIsLoading(false)
     }
@@ -52,12 +64,6 @@ export default function Home() {
           <p className="text-muted-foreground">Share code and text snippets easily</p>
         </div>
 
-        {error && (
-          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
@@ -65,6 +71,7 @@ export default function Home() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="mb-4"
+              disabled={isLoading}
             />
           </div>
 
@@ -75,14 +82,17 @@ export default function Home() {
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[400px] font-mono"
               required
+              disabled={isLoading}
             />
             <div className="text-sm text-muted-foreground mt-2">
-              {content.length} characters
+              {content.length} characters {content.length > 524288 && (
+                <span className="text-destructive">(exceeds 512KB limit)</span>
+              )}
             </div>
           </div>
 
           <div className="flex gap-4">
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language} onValueChange={setLanguage} disabled={isLoading}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Language" />
               </SelectTrigger>
@@ -99,7 +109,7 @@ export default function Home() {
               </SelectContent>
             </Select>
 
-            <Select value={expiresIn} onValueChange={setExpiresIn}>
+            <Select value={expiresIn} onValueChange={setExpiresIn} disabled={isLoading}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Expires in" />
               </SelectTrigger>
@@ -112,7 +122,7 @@ export default function Home() {
               </SelectContent>
             </Select>
 
-            <Button type="submit" disabled={isLoading || !content}>
+            <Button type="submit" disabled={isLoading || !content.trim()}>
               {isLoading ? "Creating..." : "Create Paste"}
             </Button>
           </div>

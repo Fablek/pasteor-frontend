@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Copy, Link as LinkIcon, Check } from "lucide-react"
 
@@ -17,9 +18,11 @@ export function CopyButtons({ content, pasteId }: CopyButtonsProps) {
         try {
             await navigator.clipboard.writeText(content)
             setCopiedContent(true)
+            toast.success("Content copied to clipboard!")
             setTimeout(() => setCopiedContent(false), 2000)
         } catch (err) {
-            console.error("Failed to copy content: ", err)
+            toast.error("Failed to copy content")
+            console.error("Failed to copy:", err)
         }
     }
 
@@ -28,9 +31,11 @@ export function CopyButtons({ content, pasteId }: CopyButtonsProps) {
             const url = `${window.location.origin}/paste/${pasteId}`
             await navigator.clipboard.writeText(url)
             setCopiedLink(true)
+            toast.success("Link copied to clipboard!")
             setTimeout(() => setCopiedLink(false), 2000)
         } catch (err) {
-            console.error("Failed to copy link: ", err)
+            toast.error("Failed to copy link")
+            console.error("Failed to copy link:", err)
         }
     }
 
@@ -38,17 +43,17 @@ export function CopyButtons({ content, pasteId }: CopyButtonsProps) {
         <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={copyToClipboard}>
                 {copiedContent ? (
-                <Check className="w-4 h-4 mr-2" />
+                    <Check className="w-4 h-4 mr-2" />
                 ) : (
-                <Copy className="w-4 h-4 mr-2" />
+                    <Copy className="w-4 h-4 mr-2" />
                 )}
                 {copiedContent ? "Copied!" : "Copy"}
             </Button>
             <Button variant="outline" size="sm" onClick={copyLink}>
                 {copiedLink ? (
-                <Check className="w-4 h-4 mr-2" />
+                    <Check className="w-4 h-4 mr-2" />
                 ) : (
-                <LinkIcon className="w-4 h-4 mr-2" />
+                    <LinkIcon className="w-4 h-4 mr-2" />
                 )}
                 {copiedLink ? "Copied!" : "Copy Link"}
             </Button>
