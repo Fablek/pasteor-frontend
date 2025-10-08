@@ -1,4 +1,7 @@
-import { notFound } from "next/navigation"
+'use client'
+
+import { useEffect, useState } from "react"
+import { notFound, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User } from "lucide-react"
@@ -6,6 +9,8 @@ import Link from "next/link"
 import { CodeBlock } from "@/components/CodeBlock"
 import { CopyButtons } from "@/components/CopyButtons"
 import { DeletePasteButton } from "@/components/DeletePasteButton"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useAuth } from "@/contexts/AuthContext"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
 
@@ -26,27 +31,59 @@ interface Paste {
     author?: Author
 }
 
-async function getPaste(id: string): Promise<Paste | null> {
-    try {
-        const response = await fetch(`${API_URL}/api/pastes/${id}`, {
-            cache: 'no-store'
-        })
+export default function PastePage() {
+    const params = useParams()
+    const { token } = useAuth()
+    const [paste, setPaste] = useState<Paste | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [notFoundError, setNotFoundError] = useState(false)
 
-        if (!response.ok) {
-            return null
+    useEffect(() => {
+        const fetchPaste = async () => {
+            try {
+                const headers: HeadersInit = {}
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`
+                }
+
+                const response = await fetch(`${API_URL}/api/pastes/${params.id}`, {
+                    headers,
+                    cache: 'no-store'
+                })
+
+                if (!response.ok) {
+                    setNotFoundError(true)
+                    return
+                }
+
+                const data = await response.json()
+                setPaste(data)
+            } catch (error) {
+                setNotFoundError(true)
+            } finally {
+                setLoading(false)
+            }
         }
 
-        return response.json()
-    } catch {
-        return null
+        if (params.id) {
+            fetchPaste()
+        }
+    }, [params.id, token])
+
+    if (loading) {
+        return (
+            <div className="bg-background p-8">
+                <div className="max-w-6xl mx-auto">
+                    <Skeleton className="h-8 w-64 mb-4" />
+                    <Skeleton className="h-4 w-96 mb-2" />
+                    <Skeleton className="h-4 w-full mb-8" />
+                    <Skeleton className="h-96 w-full" />
+                </div>
+            </div>
+        )
     }
-}
 
-export default async function PastePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params  // ZMIANA: await params
-    const paste = await getPaste(id)
-
-    if (!paste) {
+    if (notFoundError || !paste) {
         notFound()
     }
 
