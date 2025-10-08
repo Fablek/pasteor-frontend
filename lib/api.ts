@@ -58,6 +58,16 @@ export interface UserStats {
     mostViewedPaste?: string
 }
 
+export interface RecentPasteItem {
+    id: string
+    title?: string
+    language: string
+    createdAt: string
+    views: number
+    authorName: string
+    preview: string
+}
+
 export async function createPaste(data: CreatePasteRequest, token?: string): Promise<PasteResponse> {
     const headers: HeadersInit = {
         "Content-Type": "application/json",
@@ -156,4 +166,16 @@ export async function deletePaste(token: string, pasteId: string): Promise<void>
     if (!response.ok) {
         throw new Error('Failed to delete paste')
     }
+}
+
+export async function getRecentPastes(limit = 10): Promise<RecentPasteItem[]> {
+    const response = await fetch(`${API_URL}/api/pastes/recent?limit=${limit}`, {
+        cache: 'no-store'
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch recent pastes')
+    }
+
+    return response.json()
 }
