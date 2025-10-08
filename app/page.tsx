@@ -14,9 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { createPaste } from "@/lib/api"
+import { useAuth } from "@/contexts/AuthContext"
 
 export default function Home() {
   const router = useRouter()
+  const { token } = useAuth()
   const [content, setContent] = useState("")
   const [title, setTitle] = useState("")
   const [language, setLanguage] = useState("plaintext")
@@ -44,7 +46,7 @@ export default function Home() {
         title: title || undefined,
         language,
         expiresIn,
-      })
+      }, token)
 
       toast.success("Paste created successfully!")
       router.push(`/paste/${paste.id}`)

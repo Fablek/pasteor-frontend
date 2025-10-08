@@ -1,10 +1,18 @@
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { User } from "lucide-react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/CodeBlock"
 import { CopyButtons } from "@/components/CopyButtons"
+import { DeletePasteButton } from "@/components/DeletePasteButton"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
+
+interface Author {
+    name: string
+    avatarUrl?: string
+}
 
 interface Paste {
     id: string
@@ -14,7 +22,8 @@ interface Paste {
     createdAt: string
     expiresAt?: string
     views: number
-    createdByIp: string
+    isOwner: boolean
+    author?: Author
 }
 
 async function getPaste(id: string): Promise<Paste | null> {
@@ -33,8 +42,9 @@ async function getPaste(id: string): Promise<Paste | null> {
     }
 }
 
-export default async function PastePage({ params }: { params: { id: string } }) {
-    const paste = await getPaste(params.id)
+export default async function PastePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params  // ZMIANA: await params
+    const paste = await getPaste(id)
 
     if (!paste) {
         notFound()
@@ -54,10 +64,39 @@ export default async function PastePage({ params }: { params: { id: string } }) 
         <div className="bg-background p-8">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-6 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold mb-1">
+                    <div className="flex-1">
+                        <h1 className="text-2xl font-bold mb-2">
                             {paste.title || "Untitled Paste"}
                         </h1>
+                        
+                        {/* Author info */}
+                        <div className="flex items-center gap-2 mb-2">
+                            {paste.author ? (
+                                <>
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarImage src={paste.author.avatarUrl} />
+                                        <AvatarFallback>
+                                            {paste.author.name.charAt(0).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-sm text-muted-foreground">
+                                        by {paste.author.name}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarFallback>
+                                            <User className="h-3 w-3" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-sm text-muted-foreground">
+                                        by Anonymous
+                                    </span>
+                                </>
+                            )}
+                        </div>
+
                         <div className="flex gap-4 text-sm text-muted-foreground">
                             <span>Language: {paste.language}</span>
                             <span>Views: {paste.views}</span>
@@ -68,15 +107,25 @@ export default async function PastePage({ params }: { params: { id: string } }) 
                         </div>
                     </div>
 
-                    <CopyButtons content={paste.content} pasteId={paste.id} />
+                    <div className="flex items-center gap-2">
+                        <CopyButtons content={paste.content} pasteId={paste.id} />
+                        {paste.isOwner && (
+                            <DeletePasteButton pasteId={paste.id} />
+                        )}
+                    </div>
                 </div>
 
                 <CodeBlock code={paste.content} language={paste.language} />
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 flex justify-center gap-4">
                     <Button variant="link" asChild>
                         <Link href="/">Create New Paste</Link>
                     </Button>
+                    {paste.isOwner && (
+                        <Button variant="link" asChild>
+                            <Link href="/dashboard">My Pastes</Link>
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
