@@ -81,9 +81,25 @@ export async function createPaste(data: CreatePasteRequest, token?: string): Pro
     return response.json()
 }
 
-export async function getMyPastes(token: string, page = 1, pageSize = 20): Promise<MyPastesResponse> {
+export async function getMyPastes(
+    token: string, 
+    page = 1, 
+    pageSize = 20,
+    search?: string,
+    language?: string,
+    sortBy?: string
+): Promise<MyPastesResponse> {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString()
+    })
+
+    if (search) params.append('search', search)
+    if (language && language !== 'all') params.append('language', language)
+    if (sortBy) params.append('sortBy', sortBy)
+
     const response = await fetch(
-        `${API_URL}/api/pastes/my?page=${page}&pageSize=${pageSize}`,
+        `${API_URL}/api/pastes/my?${params.toString()}`,
         {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -94,6 +110,21 @@ export async function getMyPastes(token: string, page = 1, pageSize = 20): Promi
 
     if (!response.ok) {
         throw new Error('Failed to fetch pastes')
+    }
+
+    return response.json()
+}
+
+export async function getUserLanguages(token: string): Promise<string[]> {
+    const response = await fetch(`${API_URL}/api/pastes/languages`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        cache: 'no-store'
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch languages')
     }
 
     return response.json()
