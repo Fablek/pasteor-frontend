@@ -68,6 +68,27 @@ export interface RecentPasteItem {
     preview: string
 }
 
+export interface LanguageStats {
+    language: string
+    count: number
+}
+
+export interface PopularPasteItem {
+    id: string
+    title?: string
+    language: string
+    views: number
+    createdAt: string
+    authorName: string
+}
+
+export interface PublicStats {
+    totalPastes: number
+    totalUsers: number
+    topLanguages: LanguageStats[]
+    popularPastes: PopularPasteItem[]
+}
+
 export async function createPaste(data: CreatePasteRequest, token?: string): Promise<PasteResponse> {
     const headers: HeadersInit = {
         "Content-Type": "application/json",
@@ -175,6 +196,18 @@ export async function getRecentPastes(limit = 10): Promise<RecentPasteItem[]> {
 
     if (!response.ok) {
         throw new Error('Failed to fetch recent pastes')
+    }
+
+    return response.json()
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+    const response = await fetch(`${API_URL}/api/pastes/public-stats`, {
+        cache: 'no-store'
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch public stats')
     }
 
     return response.json()
