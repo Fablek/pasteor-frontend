@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, LogIn, LogOut, User } from "lucide-react"
+import { Moon, Sun, LogIn, LogOut, User, LayoutDashboard } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
@@ -70,6 +70,12 @@ export function Header() {
                                         <p className="text-xs text-muted-foreground">{user.email}</p>
                                         </div>
                                         <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/dashboard" className="cursor-pointer">
+                                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                Dashboard
+                                            </Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={logout}>
                                         <LogOut className="mr-2 h-4 w-4" />
                                         Logout
