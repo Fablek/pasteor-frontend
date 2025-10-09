@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/AuthContext"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
+import { ConditionalLayout } from "@/components/ConditionalLayout"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -39,11 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <Header />
-            <main className="flex-1">
+            <ConditionalLayout>
               {children}
-            </main>
-            <Footer />
+            </ConditionalLayout>
             <Toaster position="bottom-center" richColors />
           </AuthProvider>
         </ThemeProvider>
