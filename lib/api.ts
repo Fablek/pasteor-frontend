@@ -43,6 +43,12 @@ export interface PasteListItem {
     preview: string
 }
 
+export interface UpdatePasteRequest {
+    content?: string
+    title?: string
+    language?: string
+}
+
 export interface MyPastesResponse {
     pastes: PasteListItem[]
     totalCount: number
@@ -141,6 +147,28 @@ export async function getMyPastes(
 
     if (!response.ok) {
         throw new Error('Failed to fetch pastes')
+    }
+
+    return response.json()
+}
+
+export async function updatePaste(
+    token: string,
+    pasteId: string,
+    data: UpdatePasteRequest
+): Promise<PasteResponse> {
+    const response = await fetch(`${API_URL}/api/pastes/${pasteId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to update paste')
     }
 
     return response.json()

@@ -11,6 +11,7 @@ import { CopyButtons } from "@/components/CopyButtons"
 import { DeletePasteButton } from "@/components/DeletePasteButton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/contexts/AuthContext"
+import { Pencil } from "lucide-react" 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
 
@@ -147,7 +148,15 @@ export default function PastePage() {
                     <div className="flex items-center gap-2">
                         <CopyButtons content={paste.content} pasteId={paste.id} />
                         {paste.isOwner && (
-                            <DeletePasteButton pasteId={paste.id} />
+                            <>
+                                <Button variant="outline" size="sm" asChild>
+                                    <Link href={`/paste/${paste.id}/edit`}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                    </Link>
+                                </Button>
+                                <DeletePasteButton pasteId={paste.id} />
+                            </>
                         )}
                     </div>
                 </div>
