@@ -8,7 +8,9 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const isAuthPage = pathname === "/login" || pathname === "/register"
 
-    if (isAuthPage) {
+    const isRawPage = pathname?.includes("/raw")
+
+    if (isAuthPage || isRawPage) {
         return <>{children}</>
     }
 

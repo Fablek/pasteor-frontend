@@ -4,14 +4,13 @@ import { useEffect, useState } from "react"
 import { notFound, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User } from "lucide-react"
+import { User, Pencil, FileText } from "lucide-react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/CodeBlock"
 import { CopyButtons } from "@/components/CopyButtons"
 import { DeletePasteButton } from "@/components/DeletePasteButton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/contexts/AuthContext"
-import { Pencil } from "lucide-react" 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5297'
 
@@ -147,6 +146,12 @@ export default function PastePage() {
 
                     <div className="flex items-center gap-2">
                         <CopyButtons content={paste.content} pasteId={paste.id} />
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`/paste/${paste.id}/raw`} target="_blank">
+                                <FileText className="h-4 w-4 mr-2" />
+                                Raw
+                            </Link>
+                        </Button>
                         {paste.isOwner && (
                             <>
                                 <Button variant="outline" size="sm" asChild>
